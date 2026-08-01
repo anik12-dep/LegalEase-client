@@ -12,12 +12,16 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* এই @media block টা পুরো delete করে দাও */
+
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
+*/
 
 body {
   background: var(--background);
