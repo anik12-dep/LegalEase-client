@@ -13,11 +13,20 @@ export default function BrowseLawyersPage() {
   const [minFee, setMinFee] = useState("");
   const [maxFee, setMaxFee] = useState("");
   const [sort, setSort] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchLawyers = async () => {
+      setIsLoading(true);
+      setError("");
+      setIsLoading(true);
+      setIsLoading(false);
       try {
         const data = await getLawyers(
+          currentPage,
           search,
           availability,
           minFee,
@@ -25,13 +34,35 @@ export default function BrowseLawyersPage() {
           sort,
         );
         setLawyers(data.data);
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error(error);
+        setError("Failed to load lawyers.");
+        setIsLoading(false);
       }
     };
 
     fetchLawyers();
-  }, [search, availability, minFee, maxFee, sort]);
+  }, [currentPage, search, availability, minFee, maxFee, sort]);
+
+  if (isLoading) {
+    return (
+      <main className="mx-auto max-w-7xl px-6 py-10">
+        <h1 className="text-3xl font-bold">Browse Lawyers</h1>
+
+        <p className="mt-8 text-center text-lg">Loading...</p>
+      </main>
+    );
+  }
+  if (error) {
+    return (
+      <main className="mx-auto max-w-7xl px-6 py-10">
+        <h1 className="text-3xl font-bold">Browse Lawyers</h1>
+
+        <p className="mt-8 text-center text-red-600">{error}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10">
@@ -41,13 +72,19 @@ export default function BrowseLawyersPage() {
         type="text"
         placeholder="Search by name, specialization or location..."
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setCurrentPage(1);
+        }}
         className="mb-8 w-full rounded-md border p-3 outline-none"
       />
       <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <select
           value={availability}
-          onChange={(e) => setAvailability(e.target.value)}
+          onChange={(e) => {
+            setAvailability(e.target.value);
+            setCurrentPage(1);
+          }}
           className="rounded-md border p-3"
         >
           <option value="">All Availability</option>
@@ -59,7 +96,10 @@ export default function BrowseLawyersPage() {
           type="number"
           placeholder="Minimum Fee"
           value={minFee}
-          onChange={(e) => setMinFee(e.target.value)}
+          onChange={(e) => {
+            setMinFee(e.target.value);
+            setCurrentPage(1);
+          }}
           className="rounded-md border p-3"
         />
 
@@ -67,13 +107,19 @@ export default function BrowseLawyersPage() {
           type="number"
           placeholder="Maximum Fee"
           value={maxFee}
-          onChange={(e) => setMaxFee(e.target.value)}
+          onChange={(e) => {
+            setMaxFee(e.target.value);
+            setCurrentPage(1);
+          }}
           className="rounded-md border p-3"
         />
 
         <select
           value={sort}
-          onChange={(e) => setSort(e.target.value)}
+          onChange={(e) => {
+            setSort(e.target.value);
+            setCurrentPage(1);
+          }}
           className="rounded-md border p-3"
         >
           <option value="">Sort By</option>
@@ -117,6 +163,35 @@ export default function BrowseLawyersPage() {
             </Link>
           </div>
         ))}
+      </div>
+      <div className="mt-8 flex items-center justify-center gap-2">
+        <button
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+          disabled={currentPage === 1}
+          className="rounded border px-4 py-2 disabled:opacity-50"
+        >
+          Previous
+        </button>
+
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => setCurrentPage(index + 1)}
+            className={`rounded px-4 py-2 ${
+              currentPage === index + 1 ? "bg-blue-600 text-white" : "border"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          disabled={currentPage === totalPages}
+          className="rounded border px-4 py-2 disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
     </main>
   );

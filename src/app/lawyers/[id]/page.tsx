@@ -1,5 +1,6 @@
 import { getLawyerById } from "@/services/lawyerService";
 import type { Lawyer } from "@/types/lawyer";
+import HireLawyerButton from "@/components/lawyers/HireLawyerButton";
 
 interface PageProps {
   params: Promise<{
@@ -52,9 +53,7 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         </p>
       </div>
 
-      <button className="mt-8 rounded bg-blue-600 px-6 py-3 text-white">
-        Hire Lawyer
-      </button>
+      <HireLawyerButton lawyerId={lawyer._id} />
     </main>
   );
 }

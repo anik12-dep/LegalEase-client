@@ -2,13 +2,16 @@ import type { Lawyer } from "@/types/lawyer";
 
 interface LawyersResponse {
   success: boolean;
-  count: number;
+  currentPage: number;
+  totalPages: number;
+  totalLawyers: number;
   data: Lawyer[];
 }
 
 const API_URL = "http://localhost:5000/lawyers";
 
 export const getLawyers = async (
+  page: number = 1,
   search: string = "",
   availability: string = "",
   minFee: string = "",
@@ -16,6 +19,8 @@ export const getLawyers = async (
   sort: string = "",
 ): Promise<LawyersResponse> => {
   const params = new URLSearchParams();
+  params.append("page", page.toString());
+  params.append("limit", "6");
 
   if (search) params.append("search", search);
   if (availability) params.append("availability", availability);

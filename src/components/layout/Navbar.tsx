@@ -49,7 +49,7 @@ export default function Navbar() {
           ) : (
             <>
               <li>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/my-appointments">My Appointments</Link>
               </li>
 
               <li>
