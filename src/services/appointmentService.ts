@@ -13,6 +13,25 @@ export const getMyAppointments = async (token: string) => {
   return response.json();
 };
 
+export const getLawyerAppointments = async (token: string) => {
+  const response = await fetch("http://localhost:5000/appointments/lawyer", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    cache: "no-store",
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Lawyer Appointment API Error:", data);
+
+    throw new Error(data.message || "Failed to fetch lawyer appointments");
+  }
+
+  return data;
+};
+
 export const cancelAppointment = async (
   appointmentId: string,
   token: string,

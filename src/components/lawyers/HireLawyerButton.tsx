@@ -5,13 +5,15 @@ import { useAuth } from "@/context/AuthContext";
 
 interface Props {
   lawyerId: string;
+  availability: boolean;
 }
 
-export default function HireLawyerButton({ lawyerId }: Props) {
+export default function HireLawyerButton({ lawyerId, availability }: Props) {
   const router = useRouter();
   const { token } = useAuth();
 
   const handleHire = async () => {
+    // Guest user
     if (!token) {
       router.push("/login");
       return;
@@ -33,8 +35,9 @@ export default function HireLawyerButton({ lawyerId }: Props) {
 
       if (response.ok) {
         alert("Appointment booked successfully!");
+        router.push("/my-appointments");
       } else {
-        alert(data.message);
+        alert(data.message || "Failed to book appointment");
       }
     } catch (error) {
       console.error(error);
@@ -42,12 +45,25 @@ export default function HireLawyerButton({ lawyerId }: Props) {
     }
   };
 
+  // Lawyer unavailable
+  if (!availability) {
+    return (
+      <button
+        disabled
+        className="mt-8 rounded bg-gray-400 px-6 py-3 text-white"
+      >
+        Currently Unavailable
+      </button>
+    );
+  }
+
+  // Lawyer available + user logged in/out
   return (
     <button
       onClick={handleHire}
-      className="mt-8 rounded bg-blue-600 px-6 py-3 text-white"
+      className="mt-8 rounded bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
     >
-      Hire Lawyer
+      {token ? "Hire Lawyer" : "Login to Hire"}
     </button>
   );
 }

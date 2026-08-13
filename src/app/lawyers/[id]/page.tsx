@@ -16,11 +16,13 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
 
   return (
     <main className="mx-auto max-w-5xl px-6 py-10">
-      <img
-        src={lawyer.image}
-        alt={lawyer.name}
-        className="mb-6 h-80 w-full rounded-lg object-cover"
-      />
+      <div className="mx-auto w-full max-w-md overflow-hidden rounded-2xl">
+        <img
+          src={lawyer.image}
+          alt={lawyer.name}
+          className="h-[400px] w-full object-cover"
+        />
+      </div>
 
       <h1 className="text-4xl font-bold">{lawyer.name}</h1>
 
@@ -53,7 +55,10 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         </p>
       </div>
 
-      <HireLawyerButton lawyerId={lawyer._id} />
+      <HireLawyerButton
+        lawyerId={lawyer._id}
+        availability={lawyer.availability}
+      />
     </main>
   );
 }

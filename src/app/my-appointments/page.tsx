@@ -56,16 +56,16 @@ export default function MyAppointmentsPage() {
     }
 
     const fetchAppointments = async () => {
-      setIsLoading(true);
       setError("");
-      setIsLoading(true);
+
       try {
         const data = await getMyAppointments(token);
+
         setAppointments(data.data);
-        setIsLoading(false);
       } catch (error) {
         console.error(error);
         setError("Failed to load appointments.");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -73,20 +73,26 @@ export default function MyAppointmentsPage() {
     fetchAppointments();
   }, [token, loading, router]);
 
-  if (isLoading) {
+  if (loading || isLoading) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="text-3xl font-bold">My Appointments</h1>
-        <p className="mt-8 text-center text-lg">Loading...</p>
+
+        <p className="mt-8 text-center text-lg text-gray-500">
+          Loading appointments...
+        </p>
       </main>
     );
   }
+
   if (error) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
         <h1 className="text-3xl font-bold">My Appointments</h1>
 
-        <p className="mt-8 text-center text-red-600">{error}</p>
+        <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+          <p className="text-red-600">{error}</p>
+        </div>
       </main>
     );
   }
@@ -96,26 +102,43 @@ export default function MyAppointmentsPage() {
       <h1 className="mb-8 text-3xl font-bold">My Appointments</h1>
 
       {appointments.length === 0 ? (
-        <p>No appointments found.</p>
+        <div className="rounded-lg border bg-gray-50 p-10 text-center">
+          <h2 className="text-xl font-semibold text-gray-800">
+            No appointments found
+          </h2>
+
+          <p className="mt-2 text-gray-500">
+            You have not booked any lawyer appointments yet.
+          </p>
+
+          <button
+            onClick={() => router.push("/browse-lawyers")}
+            className="mt-5 rounded-md bg-blue-600 px-5 py-2 text-white hover:bg-blue-700"
+          >
+            Browse Lawyers
+          </button>
+        </div>
       ) : (
         <div className="space-y-4">
           {appointments.map((appointment) => (
             <div
               key={appointment._id}
-              className="rounded-lg border p-5 shadow-sm"
+              className="rounded-lg border bg-white p-5 shadow-sm"
             >
               <p>
                 <strong>Lawyer ID:</strong> {appointment.lawyerId}
               </p>
 
-              <p>
-                <strong>Status:</strong> {appointment.status}
+              <p className="mt-2">
+                <strong>Status:</strong>{" "}
+                <span className="capitalize">{appointment.status}</span>
               </p>
 
-              <p>
+              <p className="mt-2">
                 <strong>Date:</strong>{" "}
                 {new Date(appointment.createdAt).toLocaleString()}
               </p>
+
               <button
                 onClick={() => handleCancel(appointment._id)}
                 className="mt-4 rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"

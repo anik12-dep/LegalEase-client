@@ -1,9 +1,369 @@
-export default function Home() {
-  return (
-    <main className="mx-auto max-w-7xl px-6 py-20">
-      <h1 className="text-5xl font-bold">Welcome to LegalEase</h1>
+"use client";
 
-      <p className="mt-4 text-gray-600">Find & Hire Expert Legal Counsel</p>
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { getLawyers } from "@/services/lawyerService";
+
+import type { Lawyer } from "@/types/lawyer";
+
+export default function HomePage() {
+  const [lawyers, setLawyers] = useState<Lawyer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [topExperts, setTopExperts] = useState<Lawyer[]>([]);
+  const [topExpertsLoading, setTopExpertsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedLawyers = async () => {
+      try {
+        const response = await getLawyers(1, "", "", "", "", "");
+
+        setLawyers(response.data?.slice(0, 6) || []);
+      } catch (error) {
+        console.error("Failed to fetch featured lawyers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedLawyers();
+  }, []);
+
+  useEffect(() => {
+    const fetchTopExperts = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/appointments/top-experts",
+          {
+            cache: "no-store",
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch top legal experts");
+        }
+
+        const data = await response.json();
+
+        setTopExperts(data.data || []);
+      } catch (error) {
+        console.error("Failed to fetch top legal experts:", error);
+      } finally {
+        setTopExpertsLoading(false);
+      }
+    };
+
+    fetchTopExperts();
+  }, []);
+
+  return (
+    <main>
+      {/* Hero Section */}
+      <section className="bg-blue-50">
+        <div className="mx-auto grid min-h-[600px] max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-2">
+          {/* Hero Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p className="mb-4 font-semibold uppercase tracking-wider text-blue-600">
+              Trusted Legal Services
+            </p>
+
+            <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
+              Find & Hire Expert Legal Counsel
+            </h1>
+
+            <p className="mt-6 max-w-xl text-lg leading-8 text-gray-600">
+              Connect with experienced lawyers, explore their expertise, compare
+              consultation fees, and book legal appointments with confidence.
+            </p>
+
+            <div className="mt-8">
+              <Link
+                href="/browse-lawyers"
+                className="inline-block rounded-lg bg-blue-600 px-7 py-3 font-semibold text-white transition hover:scale-105 hover:bg-blue-700"
+              >
+                Browse Lawyers
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Hero Visual */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex justify-center"
+          >
+            <div className="flex h-80 w-full max-w-md items-center justify-center rounded-3xl bg-white p-8 shadow-xl">
+              <div className="text-center">
+                <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-5xl">
+                  ⚖️
+                </div>
+
+                <h2 className="text-2xl font-bold text-gray-900">LegalEase</h2>
+
+                <p className="mt-2 text-gray-500">
+                  Find the right legal expert for your needs.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Lawyers */}
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mb-10 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
+            Featured Lawyers
+          </h2>
+
+          <p className="mt-3 text-gray-600">
+            Explore experienced legal professionals available on LegalEase.
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="py-10 text-center text-gray-500">
+            Loading lawyers...
+          </div>
+        ) : lawyers.length === 0 ? (
+          <div className="py-10 text-center text-gray-500">
+            No lawyers available at the moment.
+          </div>
+        ) : (
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15 }}
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.12,
+                },
+              },
+            }}
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {lawyers.map((lawyer) => (
+              <motion.div
+                key={lawyer._id}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 30,
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                  },
+                }}
+                whileHover={{
+                  scale: 1.03,
+                }}
+                transition={{
+                  duration: 0.25,
+                }}
+                className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
+              >
+                {/* Lawyer Image */}
+                <div className="h-52 bg-gray-100">
+                  {lawyer.image ? (
+                    <img
+                      src={lawyer.image}
+                      alt={lawyer.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-6xl">
+                      👨‍⚖️
+                    </div>
+                  )}
+                </div>
+
+                {/* Lawyer Information */}
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {lawyer.name}
+                  </h3>
+
+                  <p className="mt-1 font-medium text-blue-600">
+                    {lawyer.specialization}
+                  </p>
+
+                  <div className="mt-4 space-y-2 text-sm text-gray-600">
+                    <p>
+                      <span className="font-semibold">Experience:</span>{" "}
+                      {lawyer.experience} years
+                    </p>
+
+                    <p>
+                      <span className="font-semibold">Consultation Fee:</span> ৳
+                      {lawyer.consultationFee}
+                    </p>
+
+                    <p>
+                      <span className="font-semibold">Location:</span>{" "}
+                      {lawyer.location}
+                    </p>
+                  </div>
+
+                  <Link
+                    href={`/lawyers/${lawyer._id}`}
+                    className="mt-5 block rounded-lg bg-blue-600 px-4 py-2 text-center font-medium text-white transition hover:bg-blue-700"
+                  >
+                    View Details
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </section>
+      {/* Top Legal Experts */}
+      <section className="bg-gray-50 px-6 py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
+              Top Legal Experts
+            </h2>
+
+            <p className="mt-3 text-gray-600">
+              Meet some of the most trusted and frequently hired legal experts.
+            </p>
+          </div>
+
+          {topExpertsLoading ? (
+            <div className="py-10 text-center text-gray-500">
+              Loading top legal experts...
+            </div>
+          ) : topExperts.length === 0 ? (
+            <div className="py-10 text-center text-gray-500">
+              No top legal experts available yet.
+            </div>
+          ) : (
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={{
+                hidden: {},
+                visible: {
+                  transition: {
+                    staggerChildren: 0.15,
+                  },
+                },
+              }}
+              className="flex flex-wrap justify-center gap-6"
+            >
+              {topExperts.map((lawyer) => (
+                <motion.div
+                  key={lawyer._id}
+                  variants={{
+                    hidden: {
+                      opacity: 0,
+                      y: 30,
+                    },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                    },
+                  }}
+                  whileHover={{
+                    scale: 1.03,
+                  }}
+                  className="w-full max-w-md rounded-2xl bg-white p-7 text-center shadow-sm transition"
+                >
+                  {/* Avatar */}
+                  <div className="mx-auto mb-5 h-28 w-28 overflow-hidden rounded-full bg-blue-100">
+                    {lawyer.image ? (
+                      <img
+                        src={lawyer.image}
+                        alt={lawyer.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-4xl">
+                        👨‍⚖️
+                      </div>
+                    )}
+                  </div>
+
+                  <h3 className="text-xl font-bold text-gray-900">
+                    {lawyer.name}
+                  </h3>
+
+                  <p className="mt-2 font-medium text-blue-600">
+                    {lawyer.specialization}
+                  </p>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    {lawyer.experience} years experience
+                  </p>
+
+                  <p className="mt-3 text-sm font-semibold text-gray-700">
+                    Most Hired Expert
+                  </p>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+      </section>
+      {/* Legal Categories */}
+      <section className="px-6 py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center">
+            <h2 className="text-3xl font-bold text-gray-900 md:text-4xl">
+              Legal Categories
+            </h2>
+
+            <p className="mt-3 text-gray-600">
+              Find lawyers based on your legal needs.
+            </p>
+          </div>
+
+          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {[
+              "Criminal Law",
+              "Corporate Law",
+              "Family Law",
+              "Civil Law",
+              "Property Law",
+              "Immigration Law",
+              "Tax Law",
+              "Cyber Law",
+            ].map((category) => (
+              <motion.div
+                key={category}
+                whileHover={{ scale: 1.04 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link
+                  href={`/browse-lawyers?search=${encodeURIComponent(category)}`}
+                  className="block rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm transition hover:border-blue-500 hover:shadow-md"
+                >
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-2xl">
+                    ⚖️
+                  </div>
+
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {category}
+                  </h3>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    Find {category.toLowerCase()} experts
+                  </p>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
