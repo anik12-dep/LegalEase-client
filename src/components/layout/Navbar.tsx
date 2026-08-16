@@ -105,6 +105,15 @@ export default function Navbar() {
                   </summary>
 
                   <div className="absolute right-0 z-50 mt-3 w-48 rounded-md border bg-white p-2 shadow-lg">
+                    {/* Main Dashboard */}
+                    <Link
+                      href="/dashboard"
+                      className="block rounded px-3 py-2 text-sm font-medium hover:bg-gray-100"
+                    >
+                      Dashboard
+                    </Link>
+
+                    {/* User Menu */}
                     {user?.role === "user" && (
                       <>
                         <Link
@@ -120,9 +129,17 @@ export default function Navbar() {
                         >
                           Hiring History
                         </Link>
+
+                        <Link
+                          href="/dashboard/user/update-profile"
+                          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                        >
+                          Update Profile
+                        </Link>
                       </>
                     )}
 
+                    {/* Lawyer Menu */}
                     {user?.role === "lawyer" && (
                       <Link
                         href="/dashboard/lawyer"
@@ -132,6 +149,7 @@ export default function Navbar() {
                       </Link>
                     )}
 
+                    {/* Admin Menu */}
                     {user?.role === "admin" && (
                       <Link
                         href="/dashboard/admin"
