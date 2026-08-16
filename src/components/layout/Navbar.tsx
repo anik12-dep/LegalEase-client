@@ -106,12 +106,21 @@ export default function Navbar() {
 
                   <div className="absolute right-0 z-50 mt-3 w-48 rounded-md border bg-white p-2 shadow-lg">
                     {user?.role === "user" && (
-                      <Link
-                        href="/my-appointments"
-                        className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
-                      >
-                        My Appointments
-                      </Link>
+                      <>
+                        <Link
+                          href="/my-appointments"
+                          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                        >
+                          My Appointments
+                        </Link>
+
+                        <Link
+                          href="/dashboard/user/hiring-history"
+                          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                        >
+                          Hiring History
+                        </Link>
+                      </>
                     )}
 
                     {user?.role === "lawyer" && (
