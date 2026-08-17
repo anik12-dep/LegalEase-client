@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaUserTie,
+  FaGoogle,
+} from "react-icons/fa";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -14,7 +24,11 @@ export default function RegisterPage() {
     role: "user",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -57,15 +71,13 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message);
+        throw new Error(data.message || "Registration failed");
       }
 
-      // Save JWT Token
       localStorage.setItem("token", data.token);
 
       setSuccess("Registration successful!");
 
-      // Redirect to Home Page
       router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -78,94 +90,214 @@ export default function RegisterPage() {
     }
   };
 
+  const handleGoogleRegister = async () => {
+    try {
+      setError("");
+      setGoogleLoading(true);
+
+      await signIn("google", {
+        callbackUrl: "/",
+      });
+    } catch {
+      setError("Google registration failed");
+      setGoogleLoading(false);
+    }
+  };
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md rounded-lg border p-8 shadow-md">
-        <h1 className="mb-6 text-center text-3xl font-bold">Register</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-10">
+      <div className="w-full max-w-md rounded-2xl border bg-white p-8 shadow-md">
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Join LegalEase and get started today
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Full Name */}
           <div>
-            <label className="mb-1 block font-medium">Full Name</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Full Name
+            </label>
 
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full rounded-md border p-3 outline-none"
-              required
-            />
+            <div className="relative">
+              <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full rounded-md border py-3 pl-10 pr-3 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
+          {/* Email */}
           <div>
-            <label className="mb-1 block font-medium">Email</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Email
+            </label>
 
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-md border p-3 outline-none"
-              required
-            />
+            <div className="relative">
+              <FaEnvelope className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full rounded-md border py-3 pl-10 pr-3 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label className="mb-1 block font-medium">Password</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Password
+            </label>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full rounded-md border p-3 outline-none"
-              required
-            />
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full rounded-md border py-3 pl-10 pr-11 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
+          {/* Confirm Password */}
           <div>
-            <label className="mb-1 block font-medium">Confirm Password</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Confirm Password
+            </label>
 
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full rounded-md border p-3 outline-none"
-              required
-            />
+            <div className="relative">
+              <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                className="w-full rounded-md border py-3 pl-10 pr-11 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
+          {/* Role */}
           <div>
-            <label className="mb-1 block font-medium">Select Role</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Select Role
+            </label>
 
-            <select
-              name="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="w-full rounded-md border p-3 outline-none"
-            >
-              <option value="user">User (Client)</option>
-              <option value="lawyer">Lawyer</option>
-            </select>
+            <div className="relative">
+              <FaUserTie className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="w-full appearance-none rounded-md border bg-white py-3 pl-10 pr-3 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="user">User (Client)</option>
+                <option value="lawyer">Lawyer</option>
+              </select>
+            </div>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {/* Error */}
+          {error && (
+            <p className="rounded-md bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </p>
+          )}
 
-          {success && <p className="text-sm text-green-600">{success}</p>}
+          {/* Success */}
+          {success && (
+            <p className="rounded-md bg-green-50 p-3 text-sm text-green-600">
+              {success}
+            </p>
+          )}
 
+          {/* Register */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-md bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            className="w-full rounded-md bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Registering..." : "Create Account"}
           </button>
         </form>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-gray-200" />
+
+          <span className="text-sm text-gray-500">OR</span>
+
+          <div className="h-px flex-1 bg-gray-200" />
+        </div>
+
+        {/* Google */}
+        <button
+          type="button"
+          onClick={handleGoogleRegister}
+          disabled={googleLoading}
+          className="flex w-full items-center justify-center gap-3 rounded-md border border-gray-300 bg-white py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <FaGoogle className="text-red-500" />
+
+          {googleLoading ? "Connecting..." : "Continue with Google"}
+        </button>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => router.push("/login")}
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Login
+          </button>
+        </p>
       </div>
     </main>
   );
