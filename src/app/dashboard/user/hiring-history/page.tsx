@@ -70,37 +70,6 @@ export default function UserHiringHistoryPage() {
       isMounted = false;
     };
   }, [authLoading, token]);
-  useEffect(() => {
-    if (authLoading || !token) {
-      return;
-    }
-
-    let isMounted = true;
-
-    const fetchAppointments = async () => {
-      try {
-        const data = await getMyAppointments(token);
-
-        if (isMounted) {
-          setAppointments(data.data || []);
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error(error);
-
-        if (isMounted) {
-          setError("Failed to load hiring history.");
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchAppointments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [token, authLoading]);
 
   // 👇 এইটার ঠিক পরে নতুন useEffect
   useEffect(() => {
@@ -108,9 +77,10 @@ export default function UserHiringHistoryPage() {
       return;
     }
 
+    const paymentStatus = searchParams.get("payment");
     const sessionId = searchParams.get("session_id");
 
-    if (!sessionId) {
+    if (paymentStatus !== "success" || !sessionId) {
       return;
     }
 
@@ -123,6 +93,7 @@ export default function UserHiringHistoryPage() {
         const data = await getMyAppointments(token);
 
         setAppointments(data.data || []);
+        window.history.replaceState({}, "", "/dashboard/user/hiring-history");
       } catch (error) {
         console.error(error);
 
