@@ -244,7 +244,7 @@ export default function BrowseLawyersPage() {
               </p>
 
               <p className="text-sm sm:text-base">
-                <strong>Fee:</strong> ${lawyer.consultationFee}
+                <strong>Hourly Rate:</strong> ৳{lawyer.consultationFee}
               </p>
 
               <p className="text-sm sm:text-base">
