@@ -18,20 +18,21 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold  ml-20 text-gray-900">
-              Quick Links
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Quick Links</h3>
 
-            <div className="mt-4 flex flex-col gap-3 ml-20 text-sm text-gray-600">
-              <Link href="/" className="hover:text-blue-600">
+            <div className="mt-4 flex flex-col gap-3 text-sm text-gray-600">
+              <Link href="/about" className="transition hover:text-blue-600">
                 About
               </Link>
 
-              <Link href="/" className="hover:text-blue-600">
+              <Link href="/contact" className="transition hover:text-blue-600">
                 Contact
               </Link>
 
-              <Link href="/" className="hover:text-blue-600">
+              <Link
+                href="/privacy-policy"
+                className="transition hover:text-blue-600"
+              >
                 Privacy Policy
               </Link>
             </div>
