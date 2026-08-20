@@ -13,6 +13,29 @@ export default function HomePage() {
   const [topExperts, setTopExperts] = useState<Lawyer[]>([]);
   const [topExpertsLoading, setTopExpertsLoading] = useState(true);
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const heroSlides = [
+    {
+      icon: "⚖️",
+      title: "Find & Hire Expert Legal Counsel",
+      description:
+        "Connect with experienced lawyers, explore their expertise, compare consultation fees, and book legal appointments with confidence.",
+    },
+    {
+      icon: "🏛️",
+      title: "Connect With Trusted Legal Professionals",
+      description:
+        "Discover qualified lawyers from different legal fields and find the right professional for your legal needs.",
+    },
+    {
+      icon: "📜",
+      title: "Get the Right Legal Help",
+      description:
+        "Explore legal experts, check their experience and consultation fees, and hire the lawyer that best fits your needs.",
+    },
+  ];
+
   useEffect(() => {
     const fetchFeaturedLawyers = async () => {
       try {
@@ -55,62 +78,117 @@ export default function HomePage() {
 
     fetchTopExperts();
   }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((previous) =>
+        previous === heroSlides.length - 1 ? 0 : previous + 1,
+      );
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <main>
       {/* Hero Section */}
+      {/* Hero Section */}
       <section className="bg-blue-50">
-        <div className="mx-auto grid min-h-[600px] max-w-7xl items-center gap-10 px-6 py-16 md:grid-cols-2">
-          {/* Hero Content */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="mb-4 font-semibold uppercase tracking-wider text-blue-600">
-              Trusted Legal Services
-            </p>
-
-            <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
-              Find & Hire Expert Legal Counsel
-            </h1>
-
-            <p className="mt-6 max-w-xl text-lg leading-8 text-gray-600">
-              Connect with experienced lawyers, explore their expertise, compare
-              consultation fees, and book legal appointments with confidence.
-            </p>
-
-            <div className="mt-8">
-              <Link
-                href="/browse-lawyers"
-                className="inline-block rounded-lg bg-blue-600 px-7 py-3 font-semibold text-white transition hover:scale-105 hover:bg-blue-700"
-              >
-                Browse Lawyers
-              </Link>
-            </div>
-          </motion.div>
-
-          {/* Hero Visual */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex justify-center"
-          >
-            <div className="flex h-80 w-full max-w-md items-center justify-center rounded-3xl bg-white p-8 shadow-xl">
-              <div className="text-center">
-                <div className="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-5xl">
-                  ⚖️
-                </div>
-
-                <h2 className="text-2xl font-bold text-gray-900">LegalEase</h2>
-
-                <p className="mt-2 text-gray-500">
-                  Find the right legal expert for your needs.
+        <div className="mx-auto max-w-7xl px-6 py-16">
+          <div className="relative min-h-[600px] overflow-hidden rounded-3xl bg-white shadow-xl">
+            <motion.div
+              key={currentSlide}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="grid min-h-[600px] items-center gap-10 p-8 md:grid-cols-2 md:p-14"
+            >
+              {/* Hero Content */}
+              <div>
+                <p className="mb-4 font-semibold uppercase tracking-wider text-blue-600">
+                  Trusted Legal Services
                 </p>
+
+                <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-6xl">
+                  {heroSlides[currentSlide].title}
+                </h1>
+
+                <p className="mt-6 max-w-xl text-lg leading-8 text-gray-600">
+                  {heroSlides[currentSlide].description}
+                </p>
+
+                <div className="mt-8">
+                  <Link
+                    href="/browse-lawyers"
+                    className="inline-block rounded-lg bg-blue-600 px-7 py-3 font-semibold text-white transition hover:scale-105 hover:bg-blue-700"
+                  >
+                    Browse Lawyers
+                  </Link>
+                </div>
               </div>
+
+              {/* Legal Visual */}
+              <div className="flex justify-center">
+                <div className="flex h-80 w-full max-w-md flex-col items-center justify-center rounded-3xl bg-blue-50 p-8">
+                  <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-full bg-blue-100 text-6xl">
+                    {heroSlides[currentSlide].icon}
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    LegalEase
+                  </h2>
+
+                  <p className="mt-2 text-center text-gray-500">
+                    Professional legal services at your fingertips.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Previous Button */}
+            <button
+              type="button"
+              onClick={() =>
+                setCurrentSlide((previous) =>
+                  previous === 0 ? heroSlides.length - 1 : previous - 1,
+                )
+              }
+              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white px-4 py-2 text-xl font-bold text-gray-700 shadow-md transition hover:bg-blue-600 hover:text-white"
+              aria-label="Previous slide"
+            >
+              ←
+            </button>
+
+            {/* Next Button */}
+            <button
+              type="button"
+              onClick={() =>
+                setCurrentSlide((previous) =>
+                  previous === heroSlides.length - 1 ? 0 : previous + 1,
+                )
+              }
+              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white px-4 py-2 text-xl font-bold text-gray-700 shadow-md transition hover:bg-blue-600 hover:text-white"
+              aria-label="Next slide"
+            >
+              →
+            </button>
+
+            {/* Slide Indicators */}
+            <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
+              {heroSlides.map((_, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => setCurrentSlide(index)}
+                  aria-label={`Go to slide ${index + 1}`}
+                  className={`h-3 rounded-full transition-all ${
+                    currentSlide === index
+                      ? "w-8 bg-blue-600"
+                      : "w-3 bg-gray-300"
+                  }`}
+                />
+              ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
