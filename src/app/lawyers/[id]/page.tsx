@@ -39,7 +39,7 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         </p>
 
         <p>
-          <strong>Consultation Fee:</strong> ${lawyer.consultationFee}
+          <strong>Hourly Rate:</strong> ৳{lawyer.consultationFee}
         </p>
 
         <p>
@@ -47,8 +47,23 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         </p>
 
         <p>
-          <strong>Availability:</strong>{" "}
-          {lawyer.availability ? "Available" : "Unavailable"}
+          <strong>Date Joined:</strong>{" "}
+          {lawyer.createdAt
+            ? new Date(lawyer.createdAt).toLocaleDateString()
+            : "N/A"}
+        </p>
+
+        <p>
+          <strong>Status:</strong>{" "}
+          <span
+            className={
+              lawyer.availability
+                ? "font-semibold text-green-600"
+                : "font-semibold text-red-600"
+            }
+          >
+            {lawyer.availability ? "Available" : "Busy"}
+          </span>
         </p>
 
         <p>
