@@ -37,7 +37,6 @@ export default function Footer() {
               </Link>
             </div>
           </div>
-
           {/* Newsletter & Social */}
           <div>
             <h3 className="text-lg font-semibold text-gray-900">

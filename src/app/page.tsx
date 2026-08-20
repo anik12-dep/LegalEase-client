@@ -68,7 +68,7 @@ export default function HomePage() {
 
         const data = await response.json();
 
-        setTopExperts(data.data || []);
+        setTopExperts((data.data || []).slice(0, 3));
       } catch (error) {
         console.error("Failed to fetch top legal experts:", error);
       } finally {
