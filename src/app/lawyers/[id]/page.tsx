@@ -1,6 +1,7 @@
 import { getLawyerById } from "@/services/lawyerService";
 import type { Lawyer } from "@/types/lawyer";
 import HireLawyerButton from "@/components/lawyers/HireLawyerButton";
+import CommentSection from "@/components/lawyers/CommentSection";
 
 interface PageProps {
   params: Promise<{
@@ -59,6 +60,7 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         lawyerId={lawyer._id}
         availability={lawyer.availability}
       />
+      <CommentSection lawyerId={lawyer._id} />
     </main>
   );
 }

@@ -102,6 +102,28 @@ export default function LawyerDashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Manage Legal Profile */}
+      <div className="mt-8 rounded-lg border bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Manage Legal Profile</h2>
+
+            <p className="mt-1 text-gray-600">
+              Update your professional information, availability and profile
+              status.
+            </p>
+          </div>
+
+          <Link
+            href="/dashboard/lawyer/manage-legal-profile"
+            className="inline-flex w-fit rounded-lg bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700"
+          >
+            Manage Profile
+          </Link>
+        </div>
+      </div>
+
       {/* Appointments */}
       <div className="mt-8">
         <h2 className="text-2xl font-bold">Appointments</h2>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 interface Lawyer {
   _id: string;
@@ -11,19 +12,29 @@ interface Lawyer {
   consultationFee: number;
   location: string;
   availability: boolean;
+  published?: boolean;
 }
 
 export default function ManageLawyersPage() {
+  const { token, loading: authLoading } = useAuth();
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const loadLawyers = async () => {
+      if (!token) {
+        setIsLoading(false);
+        setError("You must be logged in as an admin.");
+        return;
+      }
       try {
         const response = await fetch(
-          "http://localhost:5000/lawyers?limit=100",
+          "http://localhost:5000/lawyers/admin/all",
           {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
             cache: "no-store",
           },
         );
@@ -44,7 +55,82 @@ export default function ManageLawyersPage() {
     };
 
     loadLawyers();
-  }, []);
+  }, [token]);
+ 
+  const handlePublishToggle = async (lawyerId: string) => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/lawyers/admin/${lawyerId}/publish`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update lawyer status");
+      }
+
+      setLawyers((previousLawyers) =>
+        previousLawyers.map((lawyer) =>
+          lawyer._id === lawyerId
+            ? {
+                ...lawyer,
+                published: data.data.published,
+              }
+            : lawyer,
+        ),
+      );
+
+      alert(data.message);
+    } catch (error) {
+      console.error(error);
+
+      alert("Failed to update lawyer status.");
+    }
+  }
+  const handleDelete = async (lawyerId: string) => {
+    if (!token) return;
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this lawyer profile?",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/lawyers/admin/${lawyerId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete lawyer");
+      }
+
+      setLawyers((previousLawyers) =>
+        previousLawyers.filter((lawyer) => lawyer._id !== lawyerId),
+      );
+
+      alert("Lawyer deleted successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to delete lawyer.");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -108,6 +194,9 @@ export default function ManageLawyersPage() {
                 <th className="px-5 py-4 text-left text-sm font-semibold">
                   Status
                 </th>
+                <th className="px-5 py-4 text-left text-sm font-semibold">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -129,15 +218,54 @@ export default function ManageLawyersPage() {
                   <td className="px-5 py-4 text-gray-600">{lawyer.location}</td>
 
                   <td className="px-5 py-4">
-                    <span
-                      className={
-                        lawyer.availability
-                          ? "rounded-full bg-green-100 px-3 py-1 text-sm text-green-700"
-                          : "rounded-full bg-red-100 px-3 py-1 text-sm text-red-700"
-                      }
-                    >
-                      {lawyer.availability ? "Available" : "Busy"}
-                    </span>
+                    <div className="space-y-2">
+                      <div>
+                        <span
+                          className={
+                            lawyer.published
+                              ? "rounded-full bg-green-100 px-3 py-1 text-sm text-green-700"
+                              : "rounded-full bg-orange-100 px-3 py-1 text-sm text-orange-700"
+                          }
+                        >
+                          {lawyer.published ? "Published" : "Unpublished"}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span
+                          className={
+                            lawyer.availability
+                              ? "rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700"
+                              : "rounded-full bg-red-100 px-3 py-1 text-sm text-red-700"
+                          }
+                        >
+                          {lawyer.availability ? "Available" : "Busy"}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handlePublishToggle(lawyer._id)}
+                        className={`rounded-md px-4 py-2 text-sm font-medium text-white ${
+                          lawyer.published
+                            ? "bg-orange-600 hover:bg-orange-700"
+                            : "bg-green-600 hover:bg-green-700"
+                        }`}
+                      >
+                        {lawyer.published ? "Unpublish" : "Publish"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(lawyer._id)}
+                        className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

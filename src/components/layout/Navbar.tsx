@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FiLogOut } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
@@ -136,6 +137,12 @@ export default function Navbar() {
                         >
                           Update Profile
                         </Link>
+                        <Link
+                          href="/dashboard/user/comments"
+                          className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                        >
+                          Comments
+                        </Link>
                       </>
                     )}
 
@@ -165,10 +172,12 @@ export default function Navbar() {
               {/* Logout */}
               <li>
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="cursor-pointer text-red-600 hover:text-red-700"
+                  className="flex cursor-pointer items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition-all duration-200 hover:border-red-300 hover:bg-red-50 hover:text-red-700"
                 >
-                  Logout
+                  <FiLogOut className="text-base" />
+                  <span>Logout</span>
                 </button>
               </li>
             </>
