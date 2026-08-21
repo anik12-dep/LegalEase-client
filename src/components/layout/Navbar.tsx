@@ -14,6 +14,8 @@ export default function Navbar() {
 
   const [search, setSearch] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+
   const isActive = (path: string) => {
     if (path === "/") {
       return pathname === "/";
@@ -48,7 +50,11 @@ export default function Navbar() {
     <nav className="relative border-b bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
         {/* Logo */}
-        <Link href="/" className="shrink-0 text-2xl font-bold text-blue-600">
+        <Link
+          href="/"
+          onClick={() => setIsDashboardOpen(false)}
+          className="shrink-0 text-2xl font-bold text-blue-600"
+        >
           LegalEase
         </Link>
 
@@ -67,6 +73,7 @@ export default function Navbar() {
 
           <button
             type="submit"
+            onClick={() => setIsDashboardOpen(false)}
             className="rounded-r-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
           >
             Search
@@ -89,6 +96,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/"
+              onClick={() => setIsDashboardOpen(false)}
               className={`transition ${
                 isActive("/")
                   ? "font-semibold text-blue-600"
@@ -103,6 +111,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/browse-lawyers"
+              onClick={() => setIsDashboardOpen(false)}
               className={`transition ${
                 isActive("/browse-lawyers")
                   ? "font-semibold text-blue-600"
@@ -147,15 +156,20 @@ export default function Navbar() {
             <>
               {/* Dashboard Dropdown */}
               <li className="relative">
-                <details className="group">
-                  <summary className="cursor-pointer list-none hover:text-blue-600">
-                    Dashboard ▾
-                  </summary>
+                <button
+                  type="button"
+                  onClick={() => setIsDashboardOpen((previous) => !previous)}
+                  className="cursor-pointer hover:text-blue-600"
+                >
+                  Dashboard ▾
+                </button>
 
+                {isDashboardOpen && (
                   <div className="absolute right-0 z-50 mt-3 w-48 rounded-md border bg-white p-2 shadow-lg">
                     {/* Main Dashboard */}
                     <Link
                       href="/dashboard"
+                      onClick={() => setIsDashboardOpen(false)}
                       className="block rounded px-3 py-2 text-sm font-medium hover:bg-gray-100"
                     >
                       Dashboard
@@ -165,7 +179,8 @@ export default function Navbar() {
                     {user?.role === "user" && (
                       <>
                         <Link
-                          href="/my-appointments"
+                          href="/dashboard/user/my-appointments"
+                          onClick={() => setIsDashboardOpen(false)}
                           className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                         >
                           My Appointments
@@ -173,6 +188,7 @@ export default function Navbar() {
 
                         <Link
                           href="/dashboard/user/hiring-history"
+                          onClick={() => setIsDashboardOpen(false)}
                           className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                         >
                           Hiring History
@@ -180,12 +196,14 @@ export default function Navbar() {
 
                         <Link
                           href="/dashboard/user/update-profile"
+                          onClick={() => setIsDashboardOpen(false)}
                           className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                         >
                           Update Profile
                         </Link>
                         <Link
                           href="/dashboard/user/comments"
+                          onClick={() => setIsDashboardOpen(false)}
                           className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                         >
                           Comments
@@ -197,6 +215,7 @@ export default function Navbar() {
                     {user?.role === "lawyer" && (
                       <Link
                         href="/dashboard/lawyer"
+                        onClick={() => setIsDashboardOpen(false)}
                         className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                       >
                         Lawyer Dashboard
@@ -207,13 +226,14 @@ export default function Navbar() {
                     {user?.role === "admin" && (
                       <Link
                         href="/dashboard/admin"
+                        onClick={() => setIsDashboardOpen(false)}
                         className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
                       >
                         Admin Dashboard
                       </Link>
                     )}
                   </div>
-                </details>
+                )}
               </li>
 
               {/* Logout */}

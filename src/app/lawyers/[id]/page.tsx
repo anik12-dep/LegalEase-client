@@ -39,7 +39,7 @@ export default async function LawyerDetailsPage({ params }: PageProps) {
         </p>
 
         <p>
-          <strong>Hourly Rate:</strong> ৳{lawyer.consultationFee}
+          <strong>Consultation Fee:</strong> ৳{lawyer.consultationFee}
         </p>
 
         <p>

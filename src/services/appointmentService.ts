@@ -22,6 +22,7 @@ export const getLawyerAppointments = async (token: string) => {
   });
 
   const data = await response.json();
+  console.log("LAWYER APPOINTMENT RESPONSE:", data);
 
   if (!response.ok) {
     console.error("Lawyer Appointment API Error:", data);
